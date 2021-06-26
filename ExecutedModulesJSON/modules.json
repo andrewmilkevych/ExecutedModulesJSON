@@ -1,0 +1,17 @@
+{
+	
+  "modules": [
+		{
+			"name": "module1",
+			"parameter1": "test",
+			"parameter2": "test",
+			"parameter3": "test"
+		},
+		{
+			"name": "module2",
+			"parameter1": "test",
+			"parameter2": "test",
+			"parameter3": "test"
+		}
+	]
+}
