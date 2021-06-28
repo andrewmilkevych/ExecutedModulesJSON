@@ -1,0 +1,25 @@
+Create a console application (.net framework/C#).
+
+The application must have a queue/collection of the objects(modules) that will be executed one by one. It should also be possible to pass parameters to these objects before they are executed/enqueued.
+
+The order of the objects(modules) must be specified in a separate XML/JSON file and be read from there. It is assumed that the names of the modules and the types/values of the transferred parameters are known in advance. But as a developer, I would like to be able to easily expand the base of modules so that later they can be specified in the file.
+
+Example config file:
+
+{
+	"modules": [
+		{
+			"name" : "module1",
+			"parameter1": "test",
+			"parameter2": "test",
+		},
+		{
+			"name" : "module2",
+			"parameter1": "test",
+			"parameter2": "test",
+			"parameter3": "test",
+		}
+	]
+}
+
+Also, you have to cover the main functionality with the unit tests (nunit or mstest)

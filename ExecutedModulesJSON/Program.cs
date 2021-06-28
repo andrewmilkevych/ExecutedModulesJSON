@@ -6,9 +6,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using ExecutedModulesJSON.Core.Model;
+using ExecutedModulesJSON.Model;
 using Newtonsoft.Json;
-using Module = ExecutedModulesJSON.Core.Model.Module;
+using Module = ExecutedModulesJSON.Model.Module;
 
 namespace ExecutedModulesJSON
 {
@@ -18,56 +18,79 @@ namespace ExecutedModulesJSON
 
         static async Task Main(string[] args)
         {
+            #region Path to file
+
             Console.OutputEncoding = System.Text.Encoding.Unicode;
             Console.InputEncoding = System.Text.Encoding.Unicode;
-            string path = @"C:\Users\Andrew\Desktop\MyProjects\ExecutedModulesJSON\ExecutedModulesJSON\modules.json";
-            Console.WriteLine($"Считуємо файл!",Console.ForegroundColor = ConsoleColor.DarkYellow);
+            string workingDirectory = Environment.CurrentDirectory;                                     //  \ExecutedModulesJSON\bin\Debug
+            string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;            //  \ExecutedModulesJSON
+            string pathToFile = projectDirectory + @"\modules.json";                                    //  \ExecutedModulesJSON\modules.json
+
+            #endregion
+
+            #region Read Deserialize JSON                                                               
+                                                                                                        // Читаємо файл та десереалізуємо в модель
+            Console.WriteLine("Считуємо файл!",
+            Console.ForegroundColor = ConsoleColor.DarkYellow);
+
             try
             {
-                using (StreamReader sr = new StreamReader(path))
+                using (StreamReader sr = new StreamReader(pathToFile))
                 {
-                    myDeserializedClass = JsonConvert.DeserializeObject<Root>(await sr.ReadToEndAsync());
+                    myDeserializedClass = JsonConvert.DeserializeObject<Root>(await sr.ReadToEndAsync()); //Десереалізація
                 }
             }
             catch (Exception e)
             {
                 Console.WriteLine(e.Message);
             }
-            Console.WriteLine($"Sucsses!\n", Console.ForegroundColor = ConsoleColor.Green);
 
-            var QueueExecuteModules = new Queue<Module>();
-            Console.WriteLine($"Створено чергу виконання модулів!", Console.ForegroundColor = ConsoleColor.DarkYellow);
+            Console.WriteLine("Sucsses!\n", 
+            Console.ForegroundColor = ConsoleColor.Green);
+            #endregion
 
-            var QueueExecuteParameters = new Queue<string>();
-            Console.WriteLine($"Створено чергу виконання параметрів!", Console.ForegroundColor = ConsoleColor.DarkYellow);
+            #region Module in Queue
+            //  Додаємо в чергу виконання модулів
 
+            var QueueExecuteModules = new Queue<Module>();                                              //  Черга із модулів
+            Console.WriteLine("Створено чергу виконання модулів!", 
+            Console.ForegroundColor = ConsoleColor.DarkYellow);
 
-            foreach (var module in myDeserializedClass.modules)
+            foreach (var module in myDeserializedClass.modules)                                         //  Заповнюємо чергу
             {
                 QueueExecuteModules.Enqueue(module);
-                Console.WriteLine($"Додано модулів {QueueExecuteModules.Count}", Console.ForegroundColor = ConsoleColor.Blue);
+                Console.WriteLine($"Додано модулів {QueueExecuteModules.Count}", 
+                Console.ForegroundColor = ConsoleColor.Blue);
             }
 
-            while (QueueExecuteModules.Count != 0)
+            #endregion
+
+            #region Execute Modules
+            // Виконуємо по черзі модулі
+
+            while (QueueExecuteModules.Count != 0)                                                      
             {
-                var dequeveModule = QueueExecuteModules.Dequeue();
-                Console.WriteLine($"\nExecuted module: {dequeveModule.name}", Console.ForegroundColor = ConsoleColor.Green);
-                PropertyInfo[] properties = dequeveModule.GetType().GetProperties();
-                
-                foreach (var parametr in properties.Skip(1))
+                Module dequeveModule = QueueExecuteModules.Dequeue();                                   //  Витягли модуль
+                PropertyInfo[] properties = dequeveModule.GetType().GetProperties();                    //  Масив властивостей що належать типу Module
+
+                foreach (var parametr in properties)                                          //  Перебираємо властивості типу Module
                 {
-                    QueueExecuteParameters.Enqueue(parametr.Name);
-                    Console.WriteLine($"Додано параметрів {QueueExecuteParameters.Count}", Console.ForegroundColor = ConsoleColor.Blue);
-                }
-                Console.WriteLine();
-                while (QueueExecuteParameters.Count != 0)
-                {
-                    var dequeveParametr = QueueExecuteParameters.Dequeue();
-                    Console.WriteLine($"Executed parametr: {dequeveParametr}", Console.ForegroundColor = ConsoleColor.DarkYellow);
-                    Console.WriteLine(dequeveParametr+ '\n', Console.ForegroundColor = ConsoleColor.Green);
+                    if (parametr.Name == "name")                                                        //  Якщо всластивість ім'я то повідомляємо, що виконується модуль із ім'ям "name"
+                    {
+                        Console.WriteLine($"\nExecuted module: {parametr.GetValue(dequeveModule)}",     //  Беремо значення імені із властивостей об'єкта витягнутого модуля 
+                        Console.ForegroundColor = ConsoleColor.Green);
+                    }
+                    else                                                                                // Інакше це параметр то повідомляємо, що виконується параметр із ім'ям "parametr[X]"
+                    {
+                        Console.WriteLine($"Executed parametr: {parametr.Name}",                        //  Беремо ім'я поля із типу модуля
+                        Console.ForegroundColor = ConsoleColor.DarkYellow);
+                        Console.WriteLine($"{parametr.GetValue(dequeveModule)}",                        //  Беремо значення параметрів із властивостей об'єкта витягнутого модуля
+                        Console.ForegroundColor = ConsoleColor.Green);
+                    }
                 }
             }
             Console.ReadLine();
+            #endregion
 
         }
     }
