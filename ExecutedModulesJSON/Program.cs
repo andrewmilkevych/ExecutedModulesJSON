@@ -49,6 +49,65 @@ namespace ExecutedModulesJSON
             Console.ForegroundColor = ConsoleColor.Green);
             #endregion
 
+            #region Pass parameters to these objects before they are executed?
+
+            bool PassParameters = true;                                                                 // Для повторного вводу параметрів
+            while (PassParameters)
+            {
+                Console.WriteLine("Передавати параметри цим об'єктам до їх виконання? Y/N?");
+                ConsoleKeyInfo key = Console.ReadKey();
+                Console.WriteLine();
+
+                if (key.Key == ConsoleKey.N)
+                {
+                    Console.WriteLine("Start");
+                    PassParameters = false;
+                }
+                else if (key.Key == ConsoleKey.Y)
+                {
+                    Console.WriteLine("Виберіть модуль для редагування: ");
+                    
+                    for (int j = 1, i = 0; i < myDeserializedClass.modules.Count; i++, j++)             // Виводимо список модулів
+                    {
+                        Console.WriteLine(j + ". " + myDeserializedClass.modules[i].name);
+                    }
+
+                    key = Console.ReadKey();
+                    Console.WriteLine();
+
+                    var NumberModule = Convert.ToInt32(key.KeyChar.ToString()) - 1;                 // Номер модуля що буде редагуватися
+                    
+                    Type type = typeof(Module);
+
+                    Console.WriteLine("Виберіть властивіть для редагування: ");
+
+                    for (int j = 1, i = 0; i < type.GetProperties().Length; i++, j++)                   // Виводимо список властивостей модуля
+                    {
+                        Console.Write(j + ". " + type.GetProperties()[i].Name + ' ');
+                        Console.WriteLine($"{type.GetProperties()[i].GetValue(myDeserializedClass.modules[NumberModule])}");
+                    }
+
+                    key = Console.ReadKey();
+                    Console.WriteLine();
+
+                    var NumberProp = Convert.ToInt32(key.KeyChar.ToString()) - 1;                   // Номер властивості що буде редагуватися
+
+                    Console.Write("Редагування на : ");
+
+                    type.GetProperties()[NumberProp].SetValue(
+                        
+                        myDeserializedClass.modules[NumberModule],                                  // Встановлюємо нове значення властивості
+                        Console.ReadLine()); 
+                    
+                }
+                else
+                {
+                    Console.WriteLine("Натиснута інша кнопка!");
+                }
+            }
+
+            #endregion
+
             #region Module in Queue
             //  Додаємо в чергу виконання модулів
 
