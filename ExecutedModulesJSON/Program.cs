@@ -6,48 +6,25 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using ExecutedModulesJSON.Model;
+using ExecutedModulesJSON.Core;
+using ExecutedModulesJSON.Core.Model;
 using Newtonsoft.Json;
-using Module = ExecutedModulesJSON.Model.Module;
+using Module = System.Reflection.Module;
 
 namespace ExecutedModulesJSON
 {
     class Program
     {
-        public static Root myDeserializedClass { get;  set; }
-
         static async Task Main(string[] args)
         {
-            #region Path to file
 
             Console.OutputEncoding = System.Text.Encoding.Unicode;
-            Console.InputEncoding = System.Text.Encoding.Unicode;
-            string workingDirectory = Environment.CurrentDirectory;                                     //  \ExecutedModulesJSON\bin\Debug
-            string projectDirectory = Directory.GetParent(workingDirectory).Parent.FullName;            //  \ExecutedModulesJSON
-            string pathToFile = projectDirectory + @"\modules.json";                                    //  \ExecutedModulesJSON\modules.json
-
-            #endregion
-
-            #region Read Deserialize JSON                                                               
-                                                                                                        // Читаємо файл та десереалізуємо в модель
-            Console.WriteLine("Считуємо файл!",
-            Console.ForegroundColor = ConsoleColor.DarkYellow);
-
-            try
-            {
-                using (StreamReader sr = new StreamReader(pathToFile))
-                {
-                    myDeserializedClass = JsonConvert.DeserializeObject<Root>(await sr.ReadToEndAsync()); //Десереалізація
-                }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e.Message);
-            }
-
-            Console.WriteLine("Sucsses!\n", 
-            Console.ForegroundColor = ConsoleColor.Green);
-            #endregion
+            Console.InputEncoding  = System.Text.Encoding.Unicode;
+            
+            Root listModules = new DeserializeJson(                             // Десереалізуємо текст
+                new FileLoader("modules.json")._pathToFile).         // Загружаємо файл
+                ReadAsync<Root>().                                          // Читаємо
+                Result;                                                     // Повертаємо результат таска
 
             #region Pass parameters to these objects before they are executed?
 
@@ -67,9 +44,9 @@ namespace ExecutedModulesJSON
                 {
                     Console.WriteLine("Виберіть модуль для редагування: ");
                     
-                    for (int j = 1, i = 0; i < myDeserializedClass.modules.Count; i++, j++)             // Виводимо список модулів
+                    for (int j = 1, i = 0; i < listModules.Modules.Count; i++, j++)             // Виводимо список модулів
                     {
-                        Console.WriteLine(j + ". " + myDeserializedClass.modules[i].name);
+                        Console.WriteLine(j + ". " + listModules.Modules[i].name);
                     }
 
                     key = Console.ReadKey();
@@ -84,7 +61,7 @@ namespace ExecutedModulesJSON
                     for (int j = 1, i = 0; i < type.GetProperties().Length; i++, j++)                   // Виводимо список властивостей модуля
                     {
                         Console.Write(j + ". " + type.GetProperties()[i].Name + ' ');
-                        Console.WriteLine($"{type.GetProperties()[i].GetValue(myDeserializedClass.modules[NumberModule])}");
+                        Console.WriteLine($"{type.GetProperties()[i].GetValue(listModules.Modules[NumberModule])}");
                     }
 
                     key = Console.ReadKey();
@@ -95,8 +72,8 @@ namespace ExecutedModulesJSON
                     Console.Write("Редагування на : ");
 
                     type.GetProperties()[NumberProp].SetValue(
-                        
-                        myDeserializedClass.modules[NumberModule],                                  // Встановлюємо нове значення властивості
+
+                        listModules.Modules[NumberModule],                                  // Встановлюємо нове значення властивості
                         Console.ReadLine()); 
                     
                 }
@@ -115,7 +92,7 @@ namespace ExecutedModulesJSON
             Console.WriteLine("Створено чергу виконання модулів!", 
             Console.ForegroundColor = ConsoleColor.DarkYellow);
 
-            foreach (var module in myDeserializedClass.modules)                                         //  Заповнюємо чергу
+            foreach (var module in listModules.Modules)                                         //  Заповнюємо чергу
             {
                 QueueExecuteModules.Enqueue(module);
                 Console.WriteLine($"Додано модулів {QueueExecuteModules.Count}", 
