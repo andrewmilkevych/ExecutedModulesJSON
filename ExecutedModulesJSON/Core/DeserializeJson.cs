@@ -18,7 +18,7 @@ namespace ExecutedModulesJSON.Core
 
         public async Task<T> ReadAsync<T>()
         {
-            Console.WriteLine("Считуємо файл!", Console.ForegroundColor = ConsoleColor.DarkYellow);
+            Console.WriteLine($"Считуємо файл!", Console.ForegroundColor = ConsoleColor.DarkYellow);
 
             try
             {
@@ -32,7 +32,7 @@ namespace ExecutedModulesJSON.Core
                 Console.WriteLine(e.Message);
                 return default(T);
             }
-            Console.WriteLine("Sucsses!\n", Console.ForegroundColor = ConsoleColor.Green);
+            
         }
 
     }

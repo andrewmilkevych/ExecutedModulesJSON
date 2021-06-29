@@ -1,6 +1,6 @@
 ﻿namespace ExecutedModulesJSON.Core.Model
 {
-    class Module
+    public class Module
     {
         // Root myDeserializedClass = JsonConvert.DeserializeObject<Root>(myJsonResponse); 
         public string name { get; set; }

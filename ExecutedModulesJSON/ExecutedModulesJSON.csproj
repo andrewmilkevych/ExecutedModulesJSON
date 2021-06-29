@@ -69,6 +69,7 @@
     <Compile Include="Core\FileLoader.cs" />
     <Compile Include="Core\Model\Module.cs" />
     <Compile Include="Core\Model\Root.cs" />
+    <Compile Include="Core\PassParameters.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
