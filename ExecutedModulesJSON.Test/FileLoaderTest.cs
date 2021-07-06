@@ -12,9 +12,9 @@ namespace ExecutedModulesJSON.Test
        [TestMethod]
         public void FileLoader_GetWorkDirectory_ReturnTrue()
         {
-            FileLoader fileLoader = new FileLoader("modules.json");
+            FileLoader fileLoader = new FileLoader("modules.json");     // Створюємо екземпляр FileLoader
 
-            Assert.IsTrue(fileLoader._pathToFile != null);
+            Assert.IsTrue(fileLoader._pathToFile != null);                     // Перевіряємо чи об'єкт типу FileLoader має посилання на файл
         }
     }
 }

@@ -16,7 +16,7 @@ namespace ExecutedModulesJSON.Test
         private Root listModules;
 
         [TestInitialize]
-        public  void Setup()
+        public void Setup()
         {
             listModules = new DeserializeJson(_path).ReadAsync<Root>().Result;         // Створюємо десереалізовану модель
         }
