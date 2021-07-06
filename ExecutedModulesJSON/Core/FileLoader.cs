@@ -3,7 +3,7 @@ using System.IO;
 
 namespace ExecutedModulesJSON.Core
 {
-    class FileLoader
+    public class FileLoader
 
     {
         readonly private string _workingDirectory = null;

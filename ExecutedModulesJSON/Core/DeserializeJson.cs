@@ -6,7 +6,7 @@ using Newtonsoft.Json;
 
 namespace ExecutedModulesJSON.Core
 {
-    class DeserializeJson
+    public class DeserializeJson
     {
         private string _pathToFile { get; set; }
         

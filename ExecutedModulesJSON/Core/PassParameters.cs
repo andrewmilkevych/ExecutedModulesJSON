@@ -3,7 +3,7 @@ using ExecutedModulesJSON.Core.Model;
 
 namespace ExecutedModulesJSON.Core
 {
-    class PassParameters
+    public class PassParameters
     {
         private bool _PassParameters = true; // Для повторного вводу параметрів
         private ConsoleKeyInfo _key;
